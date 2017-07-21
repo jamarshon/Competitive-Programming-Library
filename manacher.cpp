@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cassert>
+#include <vector>
 
 using namespace std;
 
@@ -53,11 +55,25 @@ string Manacher(string s) {
     return res;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+namespace ManacherTest {
+
+void ManacherTest() {
+    vector<pair<string, string>> input_to_output{
+        {"forgeeksskeegfor", "geeksskeeg"},
+        {"abaaba", "abaaba"},
+        {"abababa", "abababa"},
+        {"abcbabcbabcba", "abcbabcbabcba"},
+        {"abaxabaxabb", "baxabaxab"},
+    };
+
+    for(auto input_to_output_pair: input_to_output) {
+        assert(Manacher(input_to_output_pair.first) == input_to_output_pair.second);
+    }
+}
+} // namespace ManacherTest
+
 int main() {
-    cout << Manacher("forgeeksskeegfor") << ' ' << "geeksskeeg" << endl;
-    cout << Manacher("abaaba") << ' ' << "abaaba" << endl;
-    cout << Manacher("abababa") << ' ' << "abababa" << endl;
-    cout << Manacher("abcbabcbabcba") << ' ' << "abcbabcba" << endl;
-    cout << Manacher("abaxabaxabb") << ' ' << "baxabaxab" <<  endl;
+    ManacherTest::ManacherTest();
     return 0;
 }

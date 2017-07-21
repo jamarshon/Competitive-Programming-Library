@@ -1,9 +1,11 @@
 #include <iostream>
 #include <functional>
 #include <cassert>
-#include <climits>
 #include <cmath>
 #include <vector>
+#include <chrono>
+#include <random>
+#include <algorithm>
 
 using namespace std;
 
@@ -39,24 +41,48 @@ function<int(int, int)> RMQ1(const vector<int>& arr) {
     return query;
 }
 
-void RMQTest(const vector<int>& arr, function<int(int, int)> f) {
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+namespace RMQTest {
+
+void RMQTestEvaluate(const int i, const vector<int>& arr, function<int(int, int)> f) {
     int N = arr.size();
     for(int i = 0; i < N; i++) {
         for(int j = i; j < N; j++) {
             int test = f(i, j);
-            int expect = INT_MAX;
+            int expect = arr[i];
             for(int k = i; k <= j; k++) {
                 expect = min(expect, arr[k]);
             }
-            // cout << arr[test] << ' ' << expect << endl;
+            if(arr[test] != expect) cout << arr[test] << ' ' << expect << endl;
             assert(arr[test] == expect);
         }
     }
-    printf("RMQTest complete\n");
+    printf("PASS #%d\n", i);
 }
 
+void RMQTest() {
+    vector<int> A;
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+    default_random_engine engine(seed);
+    
+    for(int i = 0; i < 1000; i++) {
+        int N = uniform_int_distribution<int>(1, 100)(engine);
+ 
+        A.clear();
+        A.resize(N);
+        uniform_int_distribution<int> dist(-100, 100);
+        auto gen = bind(dist, engine);
+        generate(A.begin(), A.end(), gen);
+
+        for(auto a: A) cout << a << ','; cout << endl;
+        RMQTestEvaluate(i, A, RMQ1(A));
+    }
+}
+
+} // namespace RMQTest
+
+
 int main() {
-    vector<int> arr{2, 4, 3, 1, 6, 7, 8, 9, 1, 7};
-    RMQTest(arr, RMQ1(arr));
+    RMQTest::RMQTest();
     return 0;
 }
