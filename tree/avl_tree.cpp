@@ -6,104 +6,26 @@
  
 using namespace std;
  
-struct Node {
+struct GenericNode {
     int val, height;
-    Node* parent, *left, *right;
-    Node(int _val): val(_val), height(0), parent(NULL), left(NULL), right(NULL) {}
-};
- 
-typedef Node TreeNode;
- 
-class TreePrinter {
-    bool HasNonNullNodes(const vector<TreeNode*>& nodes) {
-        return any_of(nodes.begin(), nodes.end(), [](const TreeNode* node) -> bool { return node != NULL; });
-    }
- 
-    string GenerateWhiteSpaces(int count) {
-        return string(max(count, 0), ' ');
-    }
- 
-    void Print(vector<TreeNode*> nodes, int level, int max_level) {
-        if(nodes.empty() || !HasNonNullNodes(nodes))
-            return;
- 
-        int floor_level = max_level - level;
-        int edge_lines = pow(2, max(floor_level - 1, 0));
-        int first_spaces = pow(2, floor_level) - 1;
-        int between_spaces = pow(2, floor_level + 1) - 1;
- 
-        string output = "";
-        output += GenerateWhiteSpaces(first_spaces);
- 
-        vector<TreeNode*> new_nodes;
-        for(const TreeNode* node: nodes) {
-            if(node == NULL) {
-                new_nodes.push_back(NULL);
-                new_nodes.push_back(NULL);
-                output += GenerateWhiteSpaces(1);
-            } else {
-                new_nodes.push_back(node -> left);
-                new_nodes.push_back(node -> right);
-                output += to_string(node -> val);
-            }
- 
-            output += GenerateWhiteSpaces(between_spaces);
-        }
- 
-        cout << output << endl;
-        output = "";
-
-        for(int i = 1; i <= edge_lines; i++) {
-            for(int j = 0; j < nodes.size(); j++) {
- 
-                output += GenerateWhiteSpaces(first_spaces - i);
-                if (nodes[j] == NULL) {
-                    output += GenerateWhiteSpaces(2*edge_lines + i + 1);
-                    continue;
-                }
- 
-                if (nodes[j] -> left == NULL)
-                    output += GenerateWhiteSpaces(1);
-                else
-                    output += "/";
- 
-                output += GenerateWhiteSpaces(i + i - 1);
- 
-                if (nodes[j] -> right == NULL)
-                    output += GenerateWhiteSpaces(1);
-                else
-                    output += "\\";
- 
-                output += GenerateWhiteSpaces(2*edge_lines - i);
-            }
- 
-            cout << output << endl;
-            output = "";
-        }
- 
-        Print(new_nodes, level + 1, max_level);
-    }
- 
-    int MaxLevel(TreeNode* node) {
-        if (node == NULL) return 0;
-        return 1 + max(MaxLevel(node -> left), MaxLevel(node -> right));
-    }
-public:
-    void Print(TreeNode* root) {
-        int max_level = MaxLevel(root);
-        Print({root}, 1, max_level);
-    }
+    GenericNode* parent, *left, *right;
+    GenericNode(int _val): val(_val), height(0), parent(NULL), left(NULL), right(NULL) {}
 };
 
+// p.Print(root)
+template<typename T>
+class P2 {bool HasNonNullNodes(const vector<T*>& nodes) {return any_of(nodes.begin(), nodes.end(), [](const T* node) -> bool { return node != NULL; }); } string GenerateWhiteSpaces(int count) {return string(max(count, 0), ' '); } void Print(vector<T*> nodes, int level, int max_level) {if(nodes.empty() || !HasNonNullNodes(nodes)) return; int floor_level = max_level - level; int edge_lines = pow(2, max(floor_level - 1, 0)); int first_spaces = pow(2, floor_level) - 1; int between_spaces = pow(2, floor_level + 1) - 1; string output = ""; output += GenerateWhiteSpaces(first_spaces); vector<T*> new_nodes; for(const T* node: nodes) {if(node == NULL) {new_nodes.push_back(NULL); new_nodes.push_back(NULL); output += GenerateWhiteSpaces(1); } else {new_nodes.push_back(node -> left); new_nodes.push_back(node -> right); output += to_string(node -> val); } output += GenerateWhiteSpaces(between_spaces); } cout << output << endl; output = ""; for(int i = 1; i <= edge_lines; i++) {for(int j = 0; j < nodes.size(); j++) {output += GenerateWhiteSpaces(first_spaces - i); if (nodes[j] == NULL) {output += GenerateWhiteSpaces(2*edge_lines + i + 1); continue; } if (nodes[j] -> left == NULL) output += GenerateWhiteSpaces(1); else output += "/"; output += GenerateWhiteSpaces(i + i - 1); if (nodes[j] -> right == NULL) output += GenerateWhiteSpaces(1); else output += "\\"; output += GenerateWhiteSpaces(2*edge_lines - i); } cout << output << endl; output = ""; } Print(new_nodes, level + 1, max_level); } int MaxLevel(T* node) {if (node == NULL) return 0; return 1 + max(MaxLevel(node -> left), MaxLevel(node -> right)); } public: void Print(T* root) {int max_level = MaxLevel(root); Print({root}, 1, max_level); } };
 
 class Tree {
+    typedef GenericNode ATreeNode;
+
     bool should_balance_;
-    TreeNode* root_ = NULL;
-    TreePrinter tree_printer_;
+    ATreeNode* root_ = NULL;
+    P2<ATreeNode> tree_printer_;
     // Rebalances tree by traversing from the inserted node all the way up to the root
     // and rotating based on height
-    void Rebalance(TreeNode* node) {
-        TreeNode* curr = node;
+    void Rebalance(ATreeNode* node) {
+        ATreeNode* curr = node;
  
         while(curr) {
             UpdateHeight(curr);
@@ -134,8 +56,8 @@ class Tree {
         }
     }
  
-    void RotateLeft(TreeNode* node) {
-        TreeNode* y = node -> right;
+    void RotateLeft(ATreeNode* node) {
+        ATreeNode* y = node -> right;
         y -> parent = node -> parent;
  
         if(y -> parent == NULL) {
@@ -159,8 +81,8 @@ class Tree {
         UpdateHeight(y);
     }
  
-    void RotateRight(TreeNode* node) {
-        TreeNode* y = node -> left;
+    void RotateRight(ATreeNode* node) {
+        ATreeNode* y = node -> left;
         y -> parent = node -> parent;
  
         if(y -> parent == NULL) {
@@ -185,7 +107,7 @@ class Tree {
     }
  
     // Update the heights by taking the max height of the left and right branches
-    int UpdateHeight(TreeNode* node) {
+    int UpdateHeight(ATreeNode* node) {
         int left_height = GetHeight(node -> left),
             right_height = GetHeight(node -> right);
  
@@ -198,7 +120,7 @@ public:
     }
  
     // Exposes root as public for modifications
-    TreeNode* GetRoot() {
+    ATreeNode* GetRoot() {
         return root_;
     }
  
@@ -208,7 +130,7 @@ public:
     }
  
     // Helper function to get the height when there is no node present
-    int GetHeight(TreeNode* node) {
+    int GetHeight(ATreeNode* node) {
         return (node == NULL) ? -1 : node -> height;
     }
  
@@ -221,12 +143,12 @@ public:
  
     // Method for inserting a single new value into the tree
     void InsertValue(const int& value) {
-        TreeNode* to_insert_node = new TreeNode(value);
+        ATreeNode* to_insert_node = new ATreeNode(value);
         if(root_ == NULL) {
             root_ = to_insert_node;
         } else {
-            TreeNode* parent_of_insert = NULL;
-            TreeNode* node = root_;
+            ATreeNode* parent_of_insert = NULL;
+            ATreeNode* node = root_;
             while(node) {
                 parent_of_insert = node;
                 if(node -> val >= value) {
