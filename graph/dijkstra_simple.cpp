@@ -18,12 +18,21 @@
  
 using namespace std;
 
-#define pii pair<int,int>
+// #define pii pair<int,int>
 #define vt vector
 #define uos unordered_set
 #define uom unordered_map
 
 typedef long long ll;
+
+unordered_map<int, int> dijkstra(unordered_map<int, vector<int>>& adj, int source) {
+    typedef pair<int,int> pii;
+    unordered_map<int, int> dist;
+    for(const auto& u_adj: adj) dist[u_adj.first] = INT_MAX;
+    priority_queue<pii, vector<pii>, greater<pii>> pq; // dist, edge and gives smallest dist first. 
+    pq.emplace(0, source);
+    return dist;
+}
 
 int main() {
     return 0;

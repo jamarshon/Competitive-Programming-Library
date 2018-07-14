@@ -1,0 +1,78 @@
+class A 
+{
+public:
+    int x;
+protected:
+    int y;
+private:
+    int z;
+};
+
+class B : public A
+{
+    // x is public
+    // y is protected
+    // z is not accessible from B
+};
+
+class C : protected A
+{
+    // x is protected
+    // y is protected
+    // z is not accessible from C
+};
+
+class D : private A    // 'private' is default for classes
+{
+    // x is private
+    // y is private
+    // z is not accessible from D
+};
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+class Base {
+    public:
+        int publicMember;
+    protected:
+        int protectedMember;
+    private:
+        int privateMember;
+};
+
+Everything that is aware of Base is also aware that Base contains publicMember.
+Only the children (and their children) are aware that Base contains protectedMember.
+No one but Base is aware of privateMember.
+By "is aware of", I mean "acknowledge the existence of, and thus be able to access".
+
+The same happens with public, private and protected inheritance. Let's consider a class Base and a 
+class Child that inherits from Base.
+
+If the inheritance is public, everything that is aware of Base and Child is also aware that Child inherits from Base.
+If the inheritance is protected, only Child, and its children, are aware that they inherit from Base.
+If the inheritance is private, no one other than Child is aware of the inheritance.
+
+//////////////////////////////////////////////////////////////////////////////////////////
+class Test {
+public:
+    virtual void show() = 0;
+};
+
+A pure virtual function (or abstract function) in C++ is a virtual function for which we don’t have 
+implementation, we only declare it. A pure virtual function is declared by assigning 0 in declaration. 
+
+Arguments must be by reference as Test cannot be constructed because of pure virtual functions.
+
+void f1(Test t){ t.show(); } // doesnt work
+void f1(Test& t){ t.show(); } // works
+
+vector<Test> arr; // doesnt work
+vector<Test*> arr; // works
+
+You can't instantiate abstract classes, thus a vector of abstract classes can't work.
+You can however use a vector of pointers to abstract classes:
+This also allows you to actually use polymorphic behaviour - even if the class wasn't abstract, 
+storing by value would lead to the problem of object slicing.
+In C++ programming, object slicing occurs when an object of a subclass type is 
+copied to an object of superclass type: the superclass copy will not have any of 
+the member variables defined in the subclass. (These variables have, in effect, been "sliced off".)

@@ -187,6 +187,6 @@ void RandomTree(int num_nodes_min=4, int num_nodes_max=10, int node_val_min=1, i
 }
  
 int main() {
-    RandomTree(10,15);
+    RandomTree(5,10, 1, 10, false);
     return 0;
 }

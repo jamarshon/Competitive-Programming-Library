@@ -1,0 +1,27 @@
+uniquely construct tree from:
+inorder + (preorder/postorder/level order)
+
+bst:
+preorder, postorder, level order
+bst gives inorder for free (sorted)
+
+All constructions in O(n)
+
+Unique traversals:
+preorder/postorder/level order + null's
+not inorder with null's as it is just alternating (e.g null, A, null, B, null, C, null, D, null, E, null)
+
+lca:
+Node* lca(Node* root) {
+    if(root == nullptr || root == p || root == q) return root;
+    auto l = lca(root->left);
+    auto r = lca(root->right);
+    if(l && r) return root;
+    if(l) return l;
+    else return r;
+}
+
+Binary tree of N nodes has N+1 null
+2*N pointers and every node has a pointer to it besides the root (N-1)
+so number of null pointers is 2*N-(N-1) = N+1
+
